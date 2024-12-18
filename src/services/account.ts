@@ -1,3 +1,4 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
 import { Accounts } from "../models/accounts"
 import prisma from "../models/prisma"
 
@@ -13,9 +14,17 @@ export const getAccounts = async() => {
 }
 
 export const createAccount = async(email: string, password: string) => {
-    const newAccount = await prisma.account.create({
-        data: { email, password }
-    })
+    console.log("Se crea un usuario con los datos", {email, password})
 
-    return newAccount
+    try {
+        const newAccount = await prisma.account.create({
+            data: { email, password }
+        })
+        
+        return newAccount
+    } catch(e) {
+        if (e instanceof PrismaClientKnownRequestError) {
+            console.log("ERROR", {...e, message: "Posiblemente se esté violando una constraint del modelo"})
+        }
+    }
 }
