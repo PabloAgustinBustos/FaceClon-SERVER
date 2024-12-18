@@ -1,8 +1,9 @@
 import { Router } from "express"
-import { getAccounts } from "../controllers/accounts"
+import { createAccount, getAccounts } from "../controllers/accounts"
 
 const accountsRouter = Router()
 
 accountsRouter.get("/", getAccounts)
+accountsRouter.post("/", createAccount)
 
 export default accountsRouter

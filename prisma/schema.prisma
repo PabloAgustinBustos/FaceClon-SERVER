@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Account {
-  id        Int     @id
+  id        Int     @id @default(autoincrement())
   email     String  @db.VarChar(40) @unique
   password  String  @db.VarChar(8)
 
@@ -24,7 +24,7 @@ model Account {
 }
 
 model User {
-  id                      Int               @id
+  id                      Int               @id @default(autoincrement())
   photoURL                String?           @db.VarChar(50) @map("photo_url")
   username                String            @db.VarChar(20)
 
@@ -43,7 +43,7 @@ model User {
 }
 
 model Profile {
-  id              Int       @id
+  id              Int       @id @default(autoincrement())
   firstname       String    @db.VarChar(10)
   lastname        String    @db.VarChar(10)
   birthday        DateTime
@@ -57,7 +57,7 @@ model Profile {
 }
 
 model Friendship {
-  firstFriendID   Int       @map("first_friend_id")
+  firstFriendID   Int       @map("first_friend_id") @default(autoincrement())
   firstFriend     User      @relation("friends", fields: [firstFriendID], references: [id])
 
   secondFriendID  Int       @map("second_friend_id")
