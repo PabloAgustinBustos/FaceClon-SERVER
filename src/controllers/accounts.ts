@@ -30,7 +30,7 @@ export const createAccount = async(request: Request<{},{},CreateAccountDTO>, res
     } else {
         if (password.length > 8) {
             response.status(400).json({
-                message: "Contraseña muy grande. Debe de tener 8 caracteres"
+                message: "Contraseña muy grande. Debe de tener 8 caracteres como máximo"
             })
         } else {
             const newAccount = await Account.createAccount(email, password)
