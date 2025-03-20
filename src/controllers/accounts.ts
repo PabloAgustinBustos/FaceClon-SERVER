@@ -14,7 +14,10 @@ type CreateAccountDTO = {
     email: string
     password: string
 }
-export const createAccount = async(request: Request<{},{},CreateAccountDTO>, response: Response) => {
+export const createAccount = async(
+    request: Request<{},{},CreateAccountDTO>, 
+    response: Response
+) => {
     const { email, password } = request.body
 
     const missing = []
@@ -27,18 +30,24 @@ export const createAccount = async(request: Request<{},{},CreateAccountDTO>, res
             message: "Faltan datos necesarios para crear la cuenta",
             missing
         })
-    } else {
-        if (password.length > 8) {
-            response.status(400).json({
-                message: "Contraseña muy grande. Debe de tener 8 caracteres como máximo"
-            })
-        } else {
-            const newAccount = await Account.createAccount(email, password)
 
-            response.status(200).json({
-                message: "Creado",
-                newAccount
-            })
-        }
-    }
+        return 
+    } 
+
+    if (password.length > 8) {
+        response.status(400).json({
+            message: "Contraseña muy grande. Debe de tener 8 caracteres como máximo"
+        })
+
+        return
+    } 
+      
+    const newAccount = await Account.createAccount(email, password)
+
+    response.status(200).json({
+        message: "Creado",
+        newAccount
+    })
+
+    return
 }
