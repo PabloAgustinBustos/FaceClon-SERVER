@@ -14,17 +14,17 @@ export const getAccounts = async() => {
 }
 
 export const createAccount = async(email: string, password: string) => {
-    console.log("Se crea un usuario con los datos", {email, password})
+    console.log("Se crea una cuenta con los datos", {email, password})
 
-    try {
-        const newAccount = await prisma.account.create({
-            data: { email, password }
-        })
-        
-        return newAccount
-    } catch(e) {
-        if (e instanceof PrismaClientKnownRequestError) {
-            console.log("ERROR", {...e, message: "Posiblemente se esté violando una constraint del modelo"})
-        }
-    }
+    /*const exists = await prisma.account.findFirst({ 
+        where: { email, password }
+    })
+
+    if (exists) throw new Error("user already exist")*/
+
+    const newAccount = await prisma.account.create({
+        data: { email, password }
+    })
+
+    return newAccount
 }

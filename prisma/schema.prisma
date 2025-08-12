@@ -25,7 +25,7 @@ model Account {
 
 model User {
   id                      Int               @id @default(autoincrement())
-  photoURL                String?           @db.VarChar(50) @map("photo_url")
+  photoURL                String?           @db.VarChar(200) @map("photo_url")
   username                String            @db.VarChar(20)
 
   accountID               Int               @unique @map("account_id")
