@@ -1,9 +1,10 @@
 import { Router } from "express"
-import { signUp } from "../controllers/auth.controller"
-import { checkSignUpDTO } from "../middlewares/auth.middleware"
+import { login, signUp } from "../controllers/auth.controller"
+import { checkLoginDTO, checkSignUpDTO } from "../middlewares/auth.middleware"
 
 const authRouter = Router()
 
-authRouter.post("", checkSignUpDTO, signUp)
+authRouter.post("/register", checkSignUpDTO, signUp)
+authRouter.post("/login", checkLoginDTO, login)
 
 export default authRouter

@@ -1,6 +1,6 @@
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library"
-import { Accounts } from "../models/accounts"
 import prisma from "../models/prisma"
+import jwt from "jsonwebtoken"
+import { generateToken } from "../utils/auth"
 
 /*const accounts = [
     new Accounts("pablo@gmail.com", "pablo123"),
@@ -16,15 +16,25 @@ export const getAccounts = async() => {
 export const createAccount = async(email: string, password: string) => {
     console.log("Se crea una cuenta con los datos", {email, password})
 
-    /*const exists = await prisma.account.findFirst({ 
-        where: { email, password }
-    })
-
-    if (exists) throw new Error("user already exist")*/
-
     const newAccount = await prisma.account.create({
         data: { email, password }
     })
 
     return newAccount
+}
+
+export const findAccountAndCheckPassword = async(email: string, password: string) => {
+    console.log(email, password)
+    const account = await prisma.account.findUnique({
+        where: {
+            email
+        },
+        include: { user: true }
+    })
+    
+    if (!account) throw new Error("User doesn't exist")
+
+    if (account.password !== password) throw new Error("Wrong password")
+
+    return { accountID: account.id, user: account.user }
 }

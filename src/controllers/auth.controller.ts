@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
-import * as Account from "../services/account"
-import * as User from "../services/user"
-import { PrismaClientKnownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
+import * as Account from "../services/account.service"
+import * as User from "../services/user.service"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { InvalidCredentialsError, UserNotFoundError } from "../exceptions/auth.exceptions";
+import { generateToken } from "../utils/auth";
 
 type SignUpDTO = {
   firstname: string
@@ -33,7 +35,41 @@ export const signUp = async(req: Request<{},{},SignUpDTO>, res: Response) => {
 
     res.status(400).json({error: {name, message}})
   }
-  
+}
 
-  return
+type LoginDTO = {
+  email: string
+  password: string
+}
+export const login = async(req: Request<{}, {}, LoginDTO>, res: Response) => {
+  const { email, password } = req.body
+
+  try {
+    const { user } = await Account.findAccountAndCheckPassword(email, password)
+    
+    const token = generateToken(user?.accountID as number, user!.id)
+
+    res.cookie("token", token, {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,                 // Para que js no pueda acceder a la cookie (previene XSS)
+      sameSite: "strict",             // Previene ataques CSRF
+      secure: process.env.NODE_ENV !== "development"
+    })
+
+    res.status(200).json({ message: "logeado", user })
+  } catch (e) {
+    const payload = { status: 500, message: "internal error" }
+
+    if (e instanceof UserNotFoundError) {
+      payload.status = 404
+      payload.message = e.message
+    }
+    if (e instanceof InvalidCredentialsError) {
+      payload.status = 401
+      payload.message = e.message
+    }
+      
+    res.status(payload.status).json({error: payload.message})
+    
+  }
 }

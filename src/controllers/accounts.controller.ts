@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import * as Account from "../services/account"
+import * as Account from "../services/account.service"
 
 export const getAccounts = async(request: Request, response: Response) => {
     const accounts = await Account.getAccounts()

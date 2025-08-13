@@ -18,15 +18,4 @@ export const createUserWithProfile = async(accountID: number, username: string, 
   })
 
   return newUser
-  /*try {
-      const newAccount = await prisma.account.create({
-          data: { email, password }
-      })
-      
-      return newAccount
-  } catch(e) {
-      if (e instanceof PrismaClientKnownRequestError) {
-          console.log("ERROR", {...e, message: "Posiblemente se esté violando una constraint del modelo"})
-      }
-  }*/
 }
