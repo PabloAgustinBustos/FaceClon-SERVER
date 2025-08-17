@@ -73,3 +73,14 @@ export const login = async(req: Request<{}, {}, LoginDTO>, res: Response) => {
     
   }
 }
+
+export const logout = async(req: Request, res: Response) => {
+  console.log(req.cookies.token)
+  try {
+    res.cookie("token", "", { maxAge: 0 })
+    res.status(200).json({ message: "bye" })
+  } catch(e) {
+    console.log(e)
+
+  }
+}
