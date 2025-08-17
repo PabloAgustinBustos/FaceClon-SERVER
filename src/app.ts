@@ -3,6 +3,7 @@ import cors from "cors"
 import cookieParser from 'cookie-parser'
 import accountsRouter from "./routes/accounts.routes"
 import authRouter from "./routes/auth.routes"
+import usersRouter from "./routes/users.routes"
 
 const app = express()
 
@@ -16,5 +17,6 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/api/v1/auth", authRouter)
 app.use("/api/v1/accounts", accountsRouter)
+app.use("/api/v1/users", usersRouter)
 
 export default app
