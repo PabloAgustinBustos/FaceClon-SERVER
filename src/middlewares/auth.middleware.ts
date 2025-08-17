@@ -1,4 +1,6 @@
 import { NextFunction, Request, Response } from "express";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import { findUser } from "../services/user.service";
 
 export const checkSignUpDTO = (req: Request, res: Response, next: NextFunction) => {
   const { email, password, firstname, lastname, username, birthday } = req.body
@@ -59,4 +61,52 @@ export const checkLoginDTO = (req: Request, res: Response, next: NextFunction) =
   }
 
   next()
+}
+
+interface DecodedToken extends JwtPayload {
+  userID: string
+  accountID: string
+}
+
+declare global {
+  namespace Express {
+    export interface Request {
+      user: {
+        accountID: string;
+        username: string;
+        id: string;
+        photoURL: string | null;
+      }
+    }
+  }
+}
+
+
+export const checkUser = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const token = req.cookies.token
+
+    if (!token) {
+      res.status(401).json({ error: "unauthorized - no token provided" })
+      return
+    }
+
+    const { userID, accountID } = jwt.verify(token, process.env.SECRET as string) as DecodedToken
+
+    const user = await findUser(userID, accountID)
+
+    if (!user) { 
+      res.status(404).json({ error: "user not found" })
+      return
+    }
+
+    req.user = user
+
+    next()
+  } catch (e) {
+    const { message, name } = e as Error
+
+    res.status(500).json({error: {name, message}})
+    return 
+  }
 }

@@ -19,3 +19,23 @@ export const createUserWithProfile = async(accountID: string, username: string, 
 
   return newUser
 }
+
+export const findUser = async(userID: string, accountID: string) => {
+  console.log("Se busca un usuario con los datos", {accountID, userID})
+
+  const user = await prisma.user.findUnique({
+    where: { 
+      id: userID,
+      accountID
+    },
+
+    select: {
+      id: true,
+      username: true,
+      photoURL: true,
+      accountID: true
+    }
+  })
+
+  return user
+}
