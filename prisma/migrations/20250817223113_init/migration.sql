@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "accounts" (
-    "id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
     "email" VARCHAR(40) NOT NULL,
     "password" VARCHAR(8) NOT NULL,
 
@@ -9,43 +9,36 @@ CREATE TABLE "accounts" (
 
 -- CreateTable
 CREATE TABLE "users" (
-    "id" INTEGER NOT NULL,
-    "photo_url" VARCHAR(50),
+    "id" TEXT NOT NULL,
+    "photo_url" VARCHAR(200),
     "username" VARCHAR(20) NOT NULL,
-    "account_id" INTEGER NOT NULL,
+    "account_id" TEXT NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "profiles" (
-    "id" INTEGER NOT NULL,
+    "id" TEXT NOT NULL,
     "firstname" VARCHAR(10) NOT NULL,
     "lastname" VARCHAR(10) NOT NULL,
     "birthday" TIMESTAMP(3) NOT NULL,
     "description" TEXT NOT NULL DEFAULT '',
     "friends_amount" INTEGER NOT NULL DEFAULT 0,
-    "user_id" INTEGER NOT NULL,
+    "user_id" TEXT NOT NULL,
 
     CONSTRAINT "profiles_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "friendships" (
-    "first_friend_id" INTEGER NOT NULL,
-    "second_friend_id" INTEGER NOT NULL,
+    "first_friend_id" TEXT NOT NULL,
+    "second_friend_id" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "friendships_pkey" PRIMARY KEY ("first_friend_id","second_friend_id")
-);
-
--- CreateTable
-CREATE TABLE "friend_requests" (
-    "sender_id" INTEGER NOT NULL,
-    "receiver_id" INTEGER NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "friend_requests_pkey" PRIMARY KEY ("sender_id","receiver_id")
 );
 
 -- CreateIndex
@@ -68,9 +61,3 @@ ALTER TABLE "friendships" ADD CONSTRAINT "friendships_first_friend_id_fkey" FORE
 
 -- AddForeignKey
 ALTER TABLE "friendships" ADD CONSTRAINT "friendships_second_friend_id_fkey" FOREIGN KEY ("second_friend_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "friend_requests" ADD CONSTRAINT "friend_requests_sender_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "friend_requests" ADD CONSTRAINT "friend_requests_receiver_id_fkey" FOREIGN KEY ("receiver_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

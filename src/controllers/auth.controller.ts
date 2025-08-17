@@ -47,7 +47,7 @@ export const login = async(req: Request<{}, {}, LoginDTO>, res: Response) => {
   try {
     const { user } = await Account.findAccountAndCheckPassword(email, password)
     
-    const token = generateToken(user?.accountID as number, user!.id)
+    const token = generateToken(user!.accountID, user!.id)
 
     res.cookie("token", token, {
       maxAge: 24 * 60 * 60 * 1000,

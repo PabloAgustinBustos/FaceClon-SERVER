@@ -14,7 +14,7 @@ datasource db {
 }
 
 model Account {
-  id        Int     @id @default(autoincrement())
+  id        String  @id @default(uuid())
   email     String  @db.VarChar(40) @unique
   password  String  @db.VarChar(8)
 
@@ -24,62 +24,46 @@ model Account {
 }
 
 model User {
-  id                      Int               @id @default(autoincrement())
+  id                      String            @id @default(uuid())
   photoURL                String?           @db.VarChar(200) @map("photo_url")
   username                String            @db.VarChar(20)
 
-  accountID               Int               @unique @map("account_id")
+  accountID               String            @unique @map("account_id")
   account                 Account           @relation(fields: [accountID], references: [id])
 
   profile                 Profile?
 
-  friends                 Friendship[]      @relation("friends")
-  friendOf                Friendship[]      @relation("friendOf")
-
-  friendRequestsReceived  FriendRequest[]   @relation("requestReceived")
-  friendRequestsSent      FriendRequest[]   @relation("requestSent")
+  friendshipsSent         Friendship[]      @relation("FriendshipSender")     // Solicitud que envio
+  friendshipsReceived     Friendship[]      @relation("FriendshipReceiver")   // Solicitudes que recibí
 
   @@map("users")
 }
 
 model Profile {
-  id              Int       @id @default(autoincrement())
+  id              String    @id @default(uuid())
   firstname       String    @db.VarChar(10)
   lastname        String    @db.VarChar(10)
   birthday        DateTime
   description     String    @default("")
   friendsAmount   Int       @default(0) @map("friends_amount")
 
-  userID          Int       @unique @map("user_id")
+  userID          String    @unique @map("user_id")
   user            User      @relation(fields: [userID], references: [id])
 
   @@map("profiles")
 }
 
 model Friendship {
-  firstFriendID   Int       @map("first_friend_id") @default(autoincrement())
-  firstFriend     User      @relation("friends", fields: [firstFriendID], references: [id])
+  firstFriendID   String    @map("first_friend_id") @default(uuid())
+  firstFriend     User      @relation("FriendshipSender", fields: [firstFriendID], references: [id])
 
-  secondFriendID  Int       @map("second_friend_id")
-  secondFriend    User      @relation("friendOf", fields: [secondFriendID], references: [id])
+  secondFriendID  String    @map("second_friend_id")
+  secondFriend    User      @relation("FriendshipReceiver", fields: [secondFriendID], references: [id])
 
+  status          String
   createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
 
   @@id([firstFriendID, secondFriendID])
   @@map("friendships")
-}
-
-model FriendRequest {
-  senderID        Int       @map("sender_id")
-  sender          User      @relation("requestSent", fields: [senderID], references: [id])
- 
-  receiverID      Int       @map("receiver_id")
-  receiver        User      @relation("requestReceived", fields: [receiverID], references: [id])
-
-
-  createdAt       DateTime  @default(now())
-
-
-  @@id([senderID, receiverID])
-  @@map("friend_requests")
 }
