@@ -39,3 +39,16 @@ export const findUser = async(userID: string, accountID: string) => {
 
   return user
 }
+
+export const sendRequest = async(senderID: string, receiverID: string) => {
+  console.log(`Usuario ${senderID} envía solicitud a ${receiverID}`)
+
+  const request = await prisma.friendship.create({
+    data: {
+      firstFriendID: senderID,
+      secondFriendID: receiverID
+    }
+  })
+
+  return request
+}
