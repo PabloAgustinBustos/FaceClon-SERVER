@@ -38,7 +38,9 @@ export const takeDecision = async (req: Request<takeDecisionParams, {}, takeDeci
   try {
     const relationship = await User.takeDecision(myID, senderID, status)
 
-    console.log(relationship)
+    if (!relationship) {
+      res.status(200).json({ message: "rejected" })
+    }
 
     res.status(200).json(relationship)
   } catch (e) {
