@@ -21,3 +21,31 @@ export const sendFriendRequest = async(req: Request, res: Response) => {
     return
   }
 }
+
+export type takeDecisionDTO = {
+  status: "accepted" | "rejected"
+}
+
+type takeDecisionParams = {
+  senderID: string
+}
+
+export const takeDecision = async (req: Request<takeDecisionParams, {}, takeDecisionDTO>, res: Response) => {
+  const { status } = req.body
+  const { id: myID } = req.user
+  const { senderID } = req.params
+
+  try {
+    const relationship = await User.takeDecision(myID, senderID, status)
+
+    console.log(relationship)
+
+    res.status(200).json(relationship)
+  } catch (e) {
+    const {name, message, code} = e as PrismaClientKnownRequestError
+
+    console.log(code, message)
+
+    res.status(500).json({name, code, message})
+  }
+}

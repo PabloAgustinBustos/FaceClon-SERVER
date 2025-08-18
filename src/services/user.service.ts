@@ -52,3 +52,21 @@ export const sendRequest = async(senderID: string, receiverID: string) => {
 
   return request
 }
+
+export const takeDecision = async (myID: string, senderID: string, decision: "accepted" | "rejected") => {
+  console.log(`Usuario ${myID} toma la decisión ${decision} con  ${senderID}`)
+
+  const relationship = await prisma.friendship.update({
+    where: {firstFriendID_secondFriendID: {
+      firstFriendID: senderID,
+      secondFriendID: myID
+    }},
+
+    data: { status: decision },
+  })
+  
+  return {
+    status: relationship.status,
+    updatedAt: relationship.updatedAt
+  }
+}
