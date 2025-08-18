@@ -41,6 +41,10 @@ export const findUser = async(userID: string, accountID: string) => {
 }
 
 export const sendRequest = async(senderID: string, receiverID: string) => {
+  if (senderID === receiverID) {
+    throw new Error("SELF_REQUEST_NOT_ALLOWED");
+  }
+  
   console.log(`Usuario ${senderID} envía solicitud a ${receiverID}`)
 
   const request = await prisma.friendship.create({
