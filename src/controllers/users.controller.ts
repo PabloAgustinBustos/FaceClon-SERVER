@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import * as User from "../services/user.service"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { RelationshipError, SelfRequestError } from "../exceptions/user.exceptions";
 
 export const sendFriendRequest = async(req: Request, res: Response) => {
   const { receiverID } = req.params
@@ -13,12 +14,21 @@ export const sendFriendRequest = async(req: Request, res: Response) => {
 
     res.status(200).json({ message: "solicitud enviada", request })
   } catch (e) {
-    let { message, name, code } = e as PrismaClientKnownRequestError
+    if (e instanceof SelfRequestError) {
+      res.status(400).json({ message: "You cannot send a friend request to yourself" });
+    }
 
-    if (code === "P2002") message = "relationship already exists"   // Unique contraint violation
-
-    res.status(400).json({error: {name, message}})
-    return
+    if (e instanceof RelationshipError) {
+      res.status(409).json({ message: "Friendship or request already exists between these users" });
+    }
+    
+    if (e instanceof PrismaClientKnownRequestError) {
+      let { message, code } = e
+  
+      if (code === "P2002") message = "relationship already exists"   // Unique contraint violation
+  
+      res.status(409).json({error: message})
+    }
   }
 }
 

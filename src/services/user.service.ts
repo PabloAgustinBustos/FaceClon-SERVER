@@ -1,3 +1,4 @@
+import { RelationshipError, SelfRequestError } from "../exceptions/user.exceptions"
 import prisma from "../models/prisma"
 
 export const createUserWithProfile = async(accountID: string, username: string, firstname: string, lastname: string, birthday: string) => {
@@ -42,7 +43,20 @@ export const findUser = async(userID: string, accountID: string) => {
 
 export const sendRequest = async(senderID: string, receiverID: string) => {
   if (senderID === receiverID) {
-    throw new Error("SELF_REQUEST_NOT_ALLOWED");
+    throw new SelfRequestError("User cannot friend themselves");
+  }
+
+  const existing = await prisma.friendship.findFirst({
+    where: {
+      OR: [
+        { firstFriendID: senderID,  secondFriendID: receiverID },
+        { firstFriendID: receiverID, secondFriendID: senderID },
+      ],
+    },
+  });
+
+  if (existing) {
+    throw new RelationshipError("Friendship already exists");
   }
   
   console.log(`Usuario ${senderID} envía solicitud a ${receiverID}`)
