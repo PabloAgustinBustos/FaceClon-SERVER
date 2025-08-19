@@ -3,6 +3,20 @@ import * as User from "../services/user.service"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { RelationshipError, SelfRequestError } from "../exceptions/user.exceptions";
 
+export const getFriendRequests = async(req: Request, res: Response) => {
+  const { id } = req.user
+  try {
+    const requests = await User.getFriendRequests(id)
+
+    res.status(200).json({ 
+      amount: requests.length,
+      requests
+    })
+  } catch(e) {
+    res.status(500).json("Internal server error")
+  }
+}
+
 export const sendFriendRequest = async(req: Request, res: Response) => {
   const { receiverID } = req.params
   const { id: senderID } = req.user

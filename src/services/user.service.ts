@@ -41,6 +41,26 @@ export const findUser = async(userID: string, accountID: string) => {
   return user
 }
 
+export const getFriendRequests = async(userID: string) => {
+  const requests = await prisma.friendship.findMany({
+    where: {
+      secondFriendID: userID,
+      status: "pending"
+    },
+    
+    include: {
+      firstFriend: true
+    }
+  })
+
+  return requests.map(req => ({ 
+    senderID: req.firstFriendID, 
+    username: req.firstFriend.username,
+    photoURL: req.firstFriend.photoURL,
+    requestDate: req.createdAt 
+  }))
+}
+
 export const sendRequest = async(senderID: string, receiverID: string) => {
   if (senderID === receiverID) {
     throw new SelfRequestError("User cannot friend themselves");
