@@ -17,6 +17,21 @@ export const getFriendRequests = async(req: Request, res: Response) => {
   }
 }
 
+export const getFriends = async(req: Request, res: Response) => {
+  const { id } = req.user
+  
+  try {
+    const friends = await User.getFriends(id)
+
+    res.status(200).json({ 
+      amount: friends.length,
+      friends
+    })
+  } catch(e) {
+    res.status(500).json("Internal server error")
+  }
+}
+
 export const sendFriendRequest = async(req: Request, res: Response) => {
   const { receiverID } = req.params
   const { id: senderID } = req.user
