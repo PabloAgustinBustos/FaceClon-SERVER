@@ -54,7 +54,7 @@ model Profile {
 }
 
 model Friendship {
-  firstFriendID   String    @map("first_friend_id") @default(uuid())
+  firstFriendID   String    @map("first_friend_id")
   firstFriend     User      @relation("FriendshipSender", fields: [firstFriendID], references: [id])
 
   secondFriendID  String    @map("second_friend_id")
