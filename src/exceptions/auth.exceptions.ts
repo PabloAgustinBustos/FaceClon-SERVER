@@ -6,8 +6,19 @@ export class InvalidCredentialsError extends Error {
 }
 
 export class UserNotFoundError extends Error {
+  code: string
+
   constructor() {
-    super("User doesn't exist");
-    this.name = "NotFoundError";
+    super();
+    this.code = "NotFoundError";
+  }
+}
+
+export class WrongPasswordError extends Error {
+  code: string
+  
+  constructor() {
+    super();
+    this.code = "WrongPassword";
   }
 }

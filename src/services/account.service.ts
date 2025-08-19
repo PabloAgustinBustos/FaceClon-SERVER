@@ -1,6 +1,7 @@
 import prisma from "../models/prisma"
 import jwt from "jsonwebtoken"
 import { generateToken } from "../utils/auth"
+import { UserNotFoundError, WrongPasswordError } from "../exceptions/auth.exceptions"
 
 /*const accounts = [
     new Accounts("pablo@gmail.com", "pablo123"),
@@ -32,9 +33,9 @@ export const findAccountAndCheckPassword = async(email: string, password: string
         include: { user: true }
     })
     
-    if (!account) throw new Error("User doesn't exist")
+    if (!account) throw new UserNotFoundError()
 
-    if (account.password !== password) throw new Error("Wrong password")
+    if (account.password !== password) throw new WrongPasswordError()
 
     return { accountID: account.id, user: account.user }
 }

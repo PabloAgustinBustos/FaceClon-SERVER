@@ -58,19 +58,18 @@ export const login = async(req: Request<{}, {}, LoginDTO>, res: Response) => {
 
     res.status(200).json({ message: "logeado", user })
   } catch (e) {
-    const payload = { status: 500, message: "internal error" }
-
     if (e instanceof UserNotFoundError) {
-      payload.status = 404
-      payload.message = e.message
+      res.status(404).json({error: "user not found"})
     }
     if (e instanceof InvalidCredentialsError) {
-      payload.status = 401
-      payload.message = e.message
+      res.status(401).json({error: "wrong password or email"})
     }
       
-    res.status(payload.status).json({error: payload.message})
-    
+    if (e instanceof PrismaClientKnownRequestError) {
+      console.log(e)
+  
+      res.status(500).json({error: "internal error"})
+    }
   }
 }
 
