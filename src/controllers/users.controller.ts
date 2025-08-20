@@ -3,6 +3,21 @@ import * as User from "../services/user.service"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { RelationshipError, SelfRequestError } from "../exceptions/user.exceptions";
 
+type GetUsersQuery = {
+  q: string
+}
+export const getUsers = async (req: Request<{}, {}, {}, GetUsersQuery>, res: Response) => {
+  try {
+    const { q } = req.query
+
+    const users = await User.getUsers(q, req.user.username)
+
+    res.status(200).json(users)
+  } catch(e) {
+    res.status(500).json("Internal server error")
+  }
+}
+
 export const getFriendRequests = async(req: Request, res: Response) => {
   const { id } = req.user
   try {

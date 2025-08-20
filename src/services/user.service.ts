@@ -41,6 +41,33 @@ export const findUser = async(userID: string, accountID: string) => {
   return user
 }
 
+export const getUsers = async(q: string, excludedUser: string) => {
+  const users = await prisma.user.findMany({
+    where: {
+      username: {
+        startsWith: q,
+        not: excludedUser,
+        mode: "insensitive",
+      }
+    },
+    take: 10,
+    orderBy: { username: "asc" },
+    select: {
+      id: true,
+      username: true,
+      photoURL: true,
+      profile: { select: { id: true } },
+    },
+  })
+
+  return users.map(u => ({
+    id: u.id,
+    username: u.username,
+    photoURL: u.photoURL,
+    profileID: u.profile?.id
+  }))
+}
+
 export const getFriendRequests = async(userID: string) => {
   const requests = await prisma.friendship.findMany({
     where: {
