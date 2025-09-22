@@ -5,6 +5,13 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { InvalidCredentialsError, UserNotFoundError } from "../exceptions/auth.exceptions";
 import { generateToken } from "../utils/auth";
 
+export const getMe = async(req: Request, res: Response) => {
+  const { user } = req
+    
+  res.status(200).json({ message: "logeado", user })
+}
+
+
 type SignUpDTO = {
   firstname: string
   lastname: string
@@ -52,7 +59,7 @@ export const login = async(req: Request<{}, {}, LoginDTO>, res: Response) => {
     res.cookie("token", token, {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,                 // Para que js no pueda acceder a la cookie (previene XSS)
-      sameSite: "strict",             // Previene ataques CSRF
+      sameSite: "none",             // Previene ataques CSRF
       secure: process.env.NODE_ENV !== "development"
     })
 

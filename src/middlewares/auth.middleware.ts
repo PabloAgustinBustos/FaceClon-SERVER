@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt, { JsonWebTokenError, JwtPayload } from "jsonwebtoken";
 import { findUser } from "../services/user.service";
 
 export const checkSignUpDTO = (req: Request, res: Response, next: NextFunction) => {
@@ -35,6 +35,7 @@ export const checkSignUpDTO = (req: Request, res: Response, next: NextFunction) 
 }
 
 export const checkLoginDTO = (req: Request, res: Response, next: NextFunction) => {
+  console.log(req.cookies)
   const { email, password } = req.body
   
   const missing = []
@@ -85,6 +86,7 @@ declare global {
 export const checkUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.token
+    console.log('token', token)
 
     if (!token) {
       res.status(401).json({ error: "unauthorized - no token provided" })
@@ -92,6 +94,7 @@ export const checkUser = async (req: Request, res: Response, next: NextFunction)
     }
 
     const { userID, accountID } = jwt.verify(token, process.env.SECRET as string) as DecodedToken
+    console.log('token verificado')
 
     const user = await findUser(userID, accountID)
 
@@ -106,7 +109,11 @@ export const checkUser = async (req: Request, res: Response, next: NextFunction)
   } catch (e) {
     const { message, name } = e as Error
 
-    res.status(500).json({error: {name, message}})
+    let status = 500
+
+    if (name === 'TokenExpiredError' || name === 'JsonWebTokenError') status = 401
+
+    res.status(status).json({error: {name, message}})
     return 
   }
 }

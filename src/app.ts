@@ -7,7 +7,10 @@ import usersRouter from "./routes/users.routes"
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+    origin: "http://localhost:5173", // o tu dominio exacto del front
+    credentials: true
+}))
 app.use(cookieParser())
 app.use(express.json())
 

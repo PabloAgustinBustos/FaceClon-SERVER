@@ -39,3 +39,16 @@ export const findAccountAndCheckPassword = async(email: string, password: string
 
     return { accountID: account.id, user: account.user }
 }
+
+export const findAccount = async(id: string) => {
+    const account = await prisma.account.findUnique({
+        where: {
+            id
+        },
+        include: { user: true }
+    })
+    
+    if (!account) throw new UserNotFoundError()
+    
+    return { accountID: account.id, user: account.user }
+}
